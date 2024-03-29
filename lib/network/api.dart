@@ -2,17 +2,14 @@ import 'package:dio/dio.dart';
 import 'package:tourist_app_mobille/network/pretty_dio_logger.dart';
 import 'package:tourist_app_mobille/network/request_headers.dart';
 
-const String headerUrl = 'https://192.168.22.100:4000'; 
-
+const String headerUrl = 'http://192.168.22.100:4000';
 
 class Api {
   static Dio? _instance;
   static const int _maxLineWidth = 90;
 
   static final BaseOptions baseOptions = BaseOptions(
-      baseUrl: '$headerUrl/api',
-      connectTimeout: 60000,
-      receiveTimeout: 60000);
+      baseUrl: '$headerUrl/api', connectTimeout: 60000, receiveTimeout: 60000);
 
   static final _prettyDioLogger = PrettyDioLogger(
       requestHeader: false,

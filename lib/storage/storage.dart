@@ -10,6 +10,8 @@ const refreshTokenKey = "REFRESH_TOKEN";
 
 const userKey = "USER";
 
+const categoryKey = "CATEGORY";
+
 final appStorage = AppStorage();
 
 class AppStorage {
@@ -19,14 +21,18 @@ class AppStorage {
     box = await Hive.openBox(appBoxName);
     return;
   }
-  
+
+  void putData(key, data) => box.put(key, data);
+  void removeData(key) => box.delete(key);
+  String getData(key) => box.get(key, defaultValue: "");
+
   void putToken(key, token) => box.put(key, token);
   void removeToken(key) => box.delete(key);
   String getToken(key) => box.get(key, defaultValue: "");
-  
+
   String getUser() => box.get(userKey, defaultValue: "");
   void putUser(data) => box.put(userKey, data);
   void removeUser() => box.delete(userKey);
 
-  Box getBox() => box;  
+  Box getBox() => box;
 }

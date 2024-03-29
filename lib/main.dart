@@ -31,8 +31,7 @@ class MyApp extends StatelessWidget {
       }),
       enableLog: true,
       theme: ThemeData(fontFamily: 'Roboto', useMaterial3: false),
-      initialRoute:
-          appStorage.getUser() == "" ? AppRoutes.LOGIN : AppRoutes.HOME,
+      initialRoute: AppRoutes.MAIN,
       getPages: AppPages.routes,
     );
   }

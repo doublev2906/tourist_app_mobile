@@ -12,12 +12,13 @@ class AppBarContainer extends StatelessWidget {
     super.key,
     required this.child,
     this.title,
+    this.marginTop = 120,
     this.titleString,
     this.subTitleString,
     this.implementTraling = false,
     this.implementLeading = true,
     this.paddingContent = const EdgeInsets.symmetric(
-      horizontal: kMediumPadding,
+      horizontal: 12,
     ),
   }) : assert(title != null || titleString != null,
             'title or titleString can\'t be null');
@@ -29,6 +30,7 @@ class AppBarContainer extends StatelessWidget {
   final bool implementTraling;
   final bool implementLeading;
   final EdgeInsets? paddingContent;
+  final double marginTop;
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +38,7 @@ class AppBarContainer extends StatelessWidget {
       body: Stack(
         children: [
           SizedBox(
-            height: 186,
+            height: 140,
             child: AppBar(
               title: title ??
                   Padding(
@@ -142,7 +144,7 @@ class AppBarContainer extends StatelessWidget {
             ),
           ),
           Container(
-            margin: const EdgeInsets.only(top: 156),
+            margin: EdgeInsets.only(top: marginTop),
             padding: paddingContent,
             child: child,
           ),
