@@ -2,7 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:tourist_app_mobille/network/pretty_dio_logger.dart';
 import 'package:tourist_app_mobille/network/request_headers.dart';
 
-const String headerUrl = 'http://192.168.22.100:4000';
+const String headerUrl = 'https://192.168.22.100:4001';
+// const String headerUrl = 'https://192.168.1.66:4001';
 
 class Api {
   static Dio? _instance;

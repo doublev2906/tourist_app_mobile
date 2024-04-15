@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:tourist_app_mobille/models/category.dart';
@@ -15,6 +16,7 @@ class HomeController extends GetxController {
   final currentPlace = Rx<String>("");
   final loadingCity = RxBool(false);
   final listCity = RxList<Map<String, dynamic>>([]);
+  final listCityFull = RxList<Map<String, dynamic>>([]);
   final listCategory = RxList<Category>([]);
   final loadingActivities = RxBool(false);
   final activities = RxList<Map<String, dynamic>>([]);
@@ -23,27 +25,54 @@ class HomeController extends GetxController {
   final loadingDestination = RxBool(false);
 
   final refreshController = RefreshController(initialRefresh: false);
+  final cityRefreshController = RefreshController(initialRefresh: false);
   final isLoadMore = RxBool(false);
   final canLoadMore = RxBool(true);
+  final searchController = TextEditingController();
 
   @override
   void onReady() {
     super.onReady();
     getDestination();
     getListCity();
-    getActivities();
+
+    searchController.addListener(() {
+      getListCity(isLoadFull: true, isSearch: true);
+    });
   }
 
-  void getListCity() {
-    loadingCity(true);
-    const url = "$headerUrl/city/get_hot_place";
+  void getListCity({bool isLoadFull = false, isSearch = false}) {
+    int offset = isLoadFull ? listCityFull.length : 0;
+    String search = searchController.text;
+    if (isLoadFull && isSearch) {
+      offset = 0;
+    }
+    final url =
+        "$headerUrl/city/get_list_city?offset=$offset${isSearch && searchController.text.isNotEmpty ? "&search=$search" : ""}";
+    if (!isLoadFull) {
+      loadingCity(true);
+    }
     Api.dio.get(url).then((res) {
-      loadingCity(false);
+      if (!isLoadFull) {
+        loadingCity(false);
+      } else {
+        cityRefreshController.loadComplete();
+      }
       if (res.data["data"] != null) {
         final data = (res.data["data"] as List)
             .map((e) => e as Map<String, dynamic>)
             .toList();
-        listCity(data);
+
+        if (isLoadFull) {
+          if (isLoadFull && isSearch) {
+            listCityFull([...data]);
+          } else {
+            listCityFull([...listCityFull, ...data]);
+          }
+        } else {
+          listCityFull(data);
+          listCity(data);
+        }
       }
     });
   }
@@ -69,11 +98,9 @@ class HomeController extends GetxController {
   }
 
   Future loadDestination() async {
-    print("lalsa");
     if (!canLoadMore.value) {
       return;
     }
-    print("dasda");
     final offset = destinations.length;
     await Api.dio
         .get(
@@ -83,6 +110,7 @@ class HomeController extends GetxController {
         refreshController.loadComplete();
       }
       if (res.data["success"]) {
+        appService.currentCity(res.data["city_id"]);
         final data = res.data["destinations"];
         if (data != null && data.length > 0) {
           destinations.addAll(

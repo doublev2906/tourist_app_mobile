@@ -8,4 +8,7 @@ abstract class AppRoutes {
   static const LOGIN = '/login';
   static const SIGN_UP = '/sign_up';
   static const MAIN = '/main';
+  static const CITY_DETAIL = '/city_detail';
+  static const DESTINATION_DETAIL = '/destination_detail';
+  static const LIST_DESTINATIONS = '/list_destinations';
 }

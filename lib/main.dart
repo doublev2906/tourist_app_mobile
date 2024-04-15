@@ -1,11 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:tourist_app_mobille/bindings/main_binding.dart';
 import 'package:tourist_app_mobille/routes/app_pages.dart';
 import 'package:tourist_app_mobille/storage/storage.dart';
 
 void main() async {
   await appStorage.openBox();
+  await initializeDateFormatting();
+  HttpOverrides.global = MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
@@ -34,5 +39,14 @@ class MyApp extends StatelessWidget {
       initialRoute: AppRoutes.MAIN,
       getPages: AppPages.routes,
     );
+  }
+}
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }
