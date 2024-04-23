@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:get/get.dart';
 import 'package:tourist_app_mobille/network/api.dart';
+import 'package:tourist_app_mobille/routes/app_pages.dart';
+import 'package:tourist_app_mobille/services/app_service.dart';
+import 'package:tourist_app_mobille/storage/storage.dart';
 import 'package:tourist_app_mobille/util/action.dart';
 
 class SignUpController extends GetxController {
@@ -10,6 +15,7 @@ class SignUpController extends GetxController {
   final confirmPassword = Rx<String>("");
 
   final loading = RxBool(false);
+  final AppService appService = Get.find();
 
   void signUp() {
     if (email.value.isEmpty) {
@@ -40,9 +46,12 @@ class SignUpController extends GetxController {
     };
     Api.dio.post(url, data: data).then((response) {
       loading(false);
-      print(response.data);
       if (response.data["success"] == true) {
+        appStorage.putData(userKey, jsonEncode(response.data["user_data"]));
+        appService
+            .currentUser((response.data["user_data"] as Map<String, dynamic>));
         showNotificationSuccess("Đăng ký thành công");
+        Get.offNamedUntil(AppRoutes.MAIN, (page) => false);
       } else {
         showNotificationError("Đăng ký thất bại");
       }

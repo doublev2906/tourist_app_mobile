@@ -11,4 +11,6 @@ abstract class AppRoutes {
   static const CITY_DETAIL = '/city_detail';
   static const DESTINATION_DETAIL = '/destination_detail';
   static const LIST_DESTINATIONS = '/list_destinations';
+  static const TRIP_DETAIL = '/trip_detail';
+  static const MAP_VIEW = '/map_view';
 }

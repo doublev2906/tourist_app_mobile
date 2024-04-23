@@ -334,7 +334,7 @@ class HomePage extends GetView<HomeController> {
     Get.bottomSheet(
       Obx(() {
         return Container(
-          height: Get.height * 0.6,
+          height: Get.height * 0.8,
           padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: const BoxDecoration(
             color: Colors.white,
@@ -384,7 +384,7 @@ class HomePage extends GetView<HomeController> {
                             fontSize: 12, color: ColorPalette.textColorBlack),
                         children: [
                       TextSpan(
-                        text: ' ${controller.currentPlace.value}',
+                        text: ' ${controller.currentCity.value}',
                         style: TextStyles.defaultStyle.copyWith(
                             fontSize: 14,
                             color: ColorPalette.primaryColor,
@@ -489,36 +489,41 @@ class HomePage extends GetView<HomeController> {
                   floating: false,
                   pinned: true,
                   backgroundColor: Colors.white,
-                  title: Container(
-                    height: 32,
-                    width: Get.width,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        border:
-                            Border.all(color: Colors.grey.shade300, width: 0.5),
-                        borderRadius: BorderRadius.circular(16)),
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          FontAwesomeIcons.magnifyingGlass,
-                          size: 14,
-                          color: Colors.blueGrey,
-                        ),
-                        const SizedBox(
-                          width: 12,
-                        ),
-                        Expanded(
-                          child: Text(controller.currentPlace.value,
-                              maxLines: 1,
-                              softWrap: false,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyles.defaultStyle.copyWith(
-                                  fontSize: 14,
-                                  color: ColorPalette.textColorBlack,
-                                  fontWeight: FontWeight.w500)),
-                        ),
-                      ],
+                  title: GestureDetector(
+                    onTap: () {
+                      Get.toNamed(AppRoutes.LIST_DESTINATIONS);
+                    },
+                    child: Container(
+                      height: 32,
+                      width: Get.width,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(
+                              color: Colors.grey.shade300, width: 0.5),
+                          borderRadius: BorderRadius.circular(16)),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            FontAwesomeIcons.magnifyingGlass,
+                            size: 14,
+                            color: Colors.blueGrey,
+                          ),
+                          const SizedBox(
+                            width: 12,
+                          ),
+                          Expanded(
+                            child: Text(controller.currentPlace.value,
+                                maxLines: 1,
+                                softWrap: false,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyles.defaultStyle.copyWith(
+                                    fontSize: 14,
+                                    color: ColorPalette.textColorBlack,
+                                    fontWeight: FontWeight.w500)),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   flexibleSpace: FlexibleSpaceBar(
@@ -612,9 +617,15 @@ class HomePage extends GetView<HomeController> {
                                   .copyWith(fontSize: 18),
                             ),
                             const Spacer(),
-                            Text(
-                              'Xem thêm',
-                              style: TextStyles.defaultStyle.primaryTextColor,
+                            GestureDetector(
+                              onTap: () {
+                                showChooseCityModal(
+                                    AppRoutes.LIST_DESTINATIONS);
+                              },
+                              child: Text(
+                                'Xem thêm',
+                                style: TextStyles.defaultStyle.primaryTextColor,
+                              ),
                             ),
                           ],
                         ),

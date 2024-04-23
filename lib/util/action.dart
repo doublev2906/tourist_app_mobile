@@ -64,3 +64,11 @@ void showNotificationError(String message, {int seconds = 3}) =>
           size: 30,
           color: Colors.white,
         ));
+
+DateTime setDateTimeToZero(DateTime dateTime) {
+  return DateTime(dateTime.year, dateTime.month, dateTime.day);
+}
+
+DateTime getCurrentTime() {
+  return setDateTimeToZero(DateTime.now());
+}

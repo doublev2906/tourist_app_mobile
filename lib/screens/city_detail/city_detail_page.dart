@@ -18,7 +18,6 @@ class CityDetailPage extends StatelessWidget {
 
   Widget buildCategories() {
     return Row(
-      // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: categories.map((c) {
         return Expanded(
@@ -96,7 +95,7 @@ class CityDetailPage extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         SizedBox(
           height: 240,
           child: ListView.builder(
@@ -105,73 +104,79 @@ class CityDetailPage extends StatelessWidget {
             padding: const EdgeInsets.only(left: 4),
             itemBuilder: (context, index) {
               final item = destination[index];
-              return Card(
-                elevation: 0,
-                margin: const EdgeInsets.only(right: 8, bottom: 8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: SizedBox(
-                  width: 180,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ClipRRect(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(8)),
-                        child: CachedNetworkImage(
-                          imageUrl: item['cover_image_url'],
-                          height: 180,
-                          width: 180,
-                          fit: BoxFit.cover,
+              return GestureDetector(
+                onTap: () {
+                  Get.toNamed(AppRoutes.DESTINATION_DETAIL,
+                      arguments: item, preventDuplicates: false);
+                },
+                child: Card(
+                  elevation: 0,
+                  margin: const EdgeInsets.only(right: 8, bottom: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: SizedBox(
+                    width: 180,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(8)),
+                          child: CachedNetworkImage(
+                            imageUrl: item['cover_image_url'],
+                            height: 180,
+                            width: 180,
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              item['name'],
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: ColorPalette.text1Color,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
+                        const SizedBox(height: 4),
+                        Padding(
+                          padding: const EdgeInsets.all(4),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item['name'],
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: ColorPalette.text1Color,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 4),
-                            Container(
-                              width: 40,
-                              height: 20,
-                              decoration: BoxDecoration(
-                                  color: Colors.deepOrangeAccent,
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(
-                                    FontAwesomeIcons.fire,
-                                    size: 10,
-                                    color: Colors.white,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    item["hot_score"].toString(),
-                                    style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.bold),
-                                  )
-                                ],
+                              const SizedBox(height: 4),
+                              Container(
+                                width: 40,
+                                height: 20,
+                                decoration: BoxDecoration(
+                                    color: Colors.deepOrangeAccent,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(
+                                      FontAwesomeIcons.fire,
+                                      size: 10,
+                                      color: Colors.white,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      item["hot_score"].toString(),
+                                      style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.bold),
+                                    )
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -663,7 +668,7 @@ class CityDetailPage extends StatelessWidget {
         .cast<Map<String, dynamic>>();
     final todayWeather = weatherModule?["todayWeather"] ?? {};
     Get.bottomSheet(Container(
-      height: 0.3 * Get.height,
+      height: 280,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: const BoxDecoration(
         color: Colors.white,

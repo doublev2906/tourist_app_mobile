@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:tourist_app_mobille/core/constants/color_palatte.dart';
 import 'package:tourist_app_mobille/screens/account/account_view.dart';
 import 'package:tourist_app_mobille/screens/home/home_page.dart';
+import 'package:tourist_app_mobille/screens/trips/trip_view.dart';
 
 import '../../core/constants/dimension_constants.dart';
 
@@ -73,7 +74,7 @@ class _MainAppState extends State<MainPage> {
         children: [
           HomePage(),
           Container(),
-          Container(),
+          TripView(),
           AccountView(),
         ],
       ),

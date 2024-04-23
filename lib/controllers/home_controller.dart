@@ -14,6 +14,7 @@ class HomeController extends GetxController {
   final appService = Get.find<AppService>();
 
   final currentPlace = Rx<String>("");
+  final currentCity = Rx<String>("");
   final loadingCity = RxBool(false);
   final listCity = RxList<Map<String, dynamic>>([]);
   final listCityFull = RxList<Map<String, dynamic>>([]);
@@ -91,6 +92,7 @@ class HomeController extends GetxController {
         (res) {
           if (res["results"] != null && res["results"].length > 0) {
             currentPlace(res["results"][0]["formatted"]);
+            currentCity(res["results"][0]["city"]);
           }
         },
       );

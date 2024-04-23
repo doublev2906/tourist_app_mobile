@@ -90,11 +90,11 @@ class PrettyDioLogger extends Interceptor {
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) {
     if (error) {
-      if (err.type == DioErrorType.response) {
+      if (err.type == DioExceptionType.unknown) {
         final uri = err.response?.requestOptions.uri;
         _printBoxed(
             header:
-            'DioError ║ Status: ${err.response?.statusCode} ${err.response?.statusMessage}',
+                'DioError ║ Status: ${err.response?.statusCode} ${err.response?.statusMessage}',
             text: uri.toString());
         if (err.response != null && err.response?.data != null) {
           logPrint('╔ ${err.type.toString()}');
@@ -155,7 +155,7 @@ class PrettyDioLogger extends Interceptor {
     final method = response.requestOptions.method;
     _printBoxed(
         header:
-        'Response ║ $method ║ Status: ${response.statusCode} ${response.statusMessage}',
+            'Response ║ $method ║ Status: ${response.statusCode} ${response.statusMessage}',
         text: uri.toString());
   }
 
@@ -192,11 +192,11 @@ class PrettyDioLogger extends Interceptor {
   String _indent([int tabCount = initialTab]) => tabStep * tabCount;
 
   void _printPrettyMap(
-      Map data, {
-        int tabs = initialTab,
-        bool isListItem = false,
-        bool isLast = false,
-      }) {
+    Map data, {
+    int tabs = initialTab,
+    bool isListItem = false,
+    bool isLast = false,
+  }) {
     var tabs0 = tabs;
     final isRoot = tabs0 == initialTab;
     final initialIndent = _indent(tabs0);
@@ -262,8 +262,8 @@ class PrettyDioLogger extends Interceptor {
 
   bool _canFlattenMap(Map map) {
     return map.values
-        .where((dynamic val) => val is Map || val is List)
-        .isEmpty &&
+            .where((dynamic val) => val is Map || val is List)
+            .isEmpty &&
         map.toString().length < maxWidth;
   }
 
@@ -277,7 +277,7 @@ class PrettyDioLogger extends Interceptor {
     if (map == null || map.isEmpty) return;
     logPrint('╔ $header ');
     map.forEach(
-            (dynamic key, dynamic value) => _printKV(key.toString(), value));
+        (dynamic key, dynamic value) => _printKV(key.toString(), value));
     _printLine('╚');
   }
 }

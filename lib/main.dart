@@ -6,6 +6,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:tourist_app_mobille/bindings/main_binding.dart';
 import 'package:tourist_app_mobille/routes/app_pages.dart';
 import 'package:tourist_app_mobille/storage/storage.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   await appStorage.openBox();
@@ -24,6 +25,11 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       initialBinding: MainBinding(),
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      supportedLocales: const [
+        Locale('vi', 'VN'),
+      ],
+      locale: const Locale('vi', 'VN'),
       builder: ((context, child) {
         return Stack(
           children: [

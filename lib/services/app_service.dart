@@ -23,4 +23,6 @@ class AppService extends GetxService {
     latitude(lat);
     longitude(long);
   }
+
+  bool isAuth() => currentUser.value.isNotEmpty;
 }

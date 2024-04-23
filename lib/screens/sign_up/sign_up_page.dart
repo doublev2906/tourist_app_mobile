@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tourist_app_mobille/controllers/sign_up_controller.dart';
 import 'package:tourist_app_mobille/core/constants/color_palatte.dart';
-import 'package:tourist_app_mobille/routes/app_pages.dart';
 import 'package:tourist_app_mobille/widgets/base_text_field.dart';
 
 class SignUpPage extends GetView<SignUpController> {
@@ -39,7 +38,7 @@ class SignUpPage extends GetView<SignUpController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: const Color(0xfffF0F2F6),
+        backgroundColor: const Color(0xffff0f2f6),
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(80.0),
           child: AppBar(

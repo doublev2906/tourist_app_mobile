@@ -121,7 +121,7 @@ class DestinationDetailPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Text(
-                  openTime["openTimeDesc"],
+                  openTime?["openTimeDesc"] ?? "",
                   style: const TextStyle(
                     fontSize: 12,
                     color: Color(0xFF0f294d),

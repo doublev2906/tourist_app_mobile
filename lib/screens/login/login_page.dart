@@ -56,7 +56,7 @@ class LoginPage extends GetView<LoginController> {
                 width: Get.width,
                 height: 40,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: controller.login,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ColorPalette.primaryColor,
                     shape: RoundedRectangleBorder(

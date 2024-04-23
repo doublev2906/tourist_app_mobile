@@ -16,10 +16,33 @@ class GeoApify {
     // initialization logic
   }
 
+  String genMarkerString(
+      {required double lat,
+      required double long,
+      String type = "awesome",
+      String color = "236155cc",
+      String icon = "suitcase",
+      String iconSize = "large"}) {
+    return "lonlat:$long,$lat;type:$type;color:%$color;icon:$icon;iconsize:$iconSize;whitecircle:no";
+  }
+
+  String genStaticMapImage(List<Map<String, dynamic>> listCoordinates,
+      {int width = 600, int height = 400}) {
+    final markers = listCoordinates
+        .map((e) => genMarkerString(lat: e["lat"], long: e["long"]))
+        .join("|");
+    return "https://maps.geoapify.com/v1/staticmap?style=osm-bright&width=$width&height=$height&marker=$markers&apiKey=$_apiKey";
+  }
+
+  String getTileLayerUrl() {
+    // "'https://maps.geoapify.com/v1/tile/osm-carto/{z}/{x}/{y}.png?apiKey=YOUR_API_KEY'"
+    return "https://maps.geoapify.com/v1/tile/osm-bright/{z}/{x}/{y}.png?apiKey=$_apiKey";
+  }
+
   Future<Map<String, dynamic>> getCurrentPosition(
       {required double lat, required double long}) async {
     final url =
-        'https://api.geoapify.com/v1/geocode/reverse?lang=vi&lat=$lat&lon=$long&format=json&apiKey=${_apiKey}';
+        'https://api.geoapify.com/v1/geocode/reverse?lang=vi&lat=$lat&lon=$long&format=json&apiKey=$_apiKey';
     final data = await Api.dio.get(url);
     return data.data;
   }
