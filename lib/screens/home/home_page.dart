@@ -270,7 +270,7 @@ class HomePage extends GetView<HomeController> {
                       fit: BoxFit.cover,
                     ),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Padding(
                     padding:
                         const EdgeInsets.symmetric(vertical: 4, horizontal: 8),

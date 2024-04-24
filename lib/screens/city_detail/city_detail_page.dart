@@ -4,14 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:tourist_app_mobille/controllers/city_detail_controller.dart';
 import 'package:tourist_app_mobille/core/constants/color_palatte.dart';
 import 'package:tourist_app_mobille/core/constants/constants.dart';
 import 'package:tourist_app_mobille/core/constants/textstyle_ext.dart';
 import 'package:tourist_app_mobille/routes/app_pages.dart';
+import 'package:tourist_app_mobille/util/geo_apify.dart';
 
 class CityDetailPage extends StatelessWidget {
   CityDetailPage({super.key});
+
   final city = Get.arguments ?? {};
   final controller =
       Get.put(CityDetailController(), tag: (Get.arguments ?? {})['id'] ?? "");
@@ -661,96 +664,111 @@ class CityDetailPage extends StatelessWidget {
   }
 
   void showWeatherBottomSheet() {
-    final cityInfo = controller.cityDetailData.value['city_info'];
-    final weatherModule =
-        cityInfo?["travelTipModule"]?["weather"]?["weatherModule"];
-    final futureWeather = ((weatherModule?["futureWeather"] ?? []) as List)
-        .cast<Map<String, dynamic>>();
-    final todayWeather = weatherModule?["todayWeather"] ?? {};
-    Get.bottomSheet(Container(
-      height: 280,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(16),
-          topRight: Radius.circular(16),
-        ),
-      ),
-      child: Column(
-        children: [
-          Container(
-            height: 6,
-            width: 40,
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.grey.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(4),
-            ),
+    final loading = RxBool(true);
+    final weather = RxMap<String, dynamic>({});
+    GeoApify()
+        .getWeather(
+            lat: city["coordinates"]["latitude"],
+            long: city["coordinates"]["longitude"])
+        .then((value) {
+      weather(value);
+      loading(false);
+    });
+    Get.bottomSheet(Obx(() {
+      final todayWeather = weather["main"] ?? {};
+      final weathers =
+          ((weather["weather"] ?? []) as List).cast<Map<String, dynamic>>();
+      final weatherDes = weathers.isNotEmpty ? weathers.first : {};
+      return Container(
+        height: 280,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
           ),
-          Expanded(
-              child: SizedBox(
-            width: Get.width,
-            child: Column(
-              children: [
-                const Text(
-                  "Hôm Nay",
-                  style: TextStyle(
-                    color: ColorPalette.text1Color,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+        ),
+        child: loading.value
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : Column(
+                children: [
+                  Container(
+                    height: 6,
+                    width: 40,
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  todayWeather["date"] ?? "",
-                  style: const TextStyle(
-                      color: Color.fromRGBO(69, 88, 115, 1),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  "${todayWeather["temperatureRange"]["min"]}°",
-                  style: const TextStyle(
-                    color: ColorPalette.text1Color,
-                    fontSize: 60,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                Text(
-                  "${todayWeather["weatherName"] ?? ""} ${todayWeather["temperatureRange"]["min"]}°C/${todayWeather["temperatureRange"]["max"]}°C",
-                  style: const TextStyle(
-                    color: Color.fromRGBO(69, 88, 115, 1),
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  "${weatherModule["weatherIndicatorDesc"]}",
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontStyle: FontStyle.italic,
-                    color: Color.fromRGBO(69, 88, 115, 1),
-                    fontSize: 12,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  "${weatherModule["weatherTitle"]}",
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Color.fromRGBO(69, 88, 115, 1),
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          ))
-        ],
-      ),
-    ));
+                  Expanded(
+                      child: SizedBox(
+                    width: Get.width,
+                    child: Column(
+                      children: [
+                        const Text(
+                          "Hôm Nay",
+                          style: TextStyle(
+                            color: ColorPalette.text1Color,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          DateFormat("EEEE, dd/MM/yyyy", "vi_VN")
+                              .format(DateTime.now()),
+                          style: const TextStyle(
+                              color: Color.fromRGBO(69, 88, 115, 1),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "${((todayWeather["temp"] ?? 0) as double).round()}°C",
+                          style: const TextStyle(
+                            color: ColorPalette.text1Color,
+                            fontSize: 60,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Text(
+                          "${weatherDes["description"] ?? ""} ${((todayWeather["temp_min"] ?? 0) as double).round()}°C/${((todayWeather["temp_max"] ?? 0) as double).round()}°C",
+                          style: const TextStyle(
+                            color: Color.fromRGBO(69, 88, 115, 1),
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        const Text(
+                          "Thời tiết thích hơp để du lịch tại Hà Nội",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontStyle: FontStyle.italic,
+                            color: Color.fromRGBO(69, 88, 115, 1),
+                            fontSize: 12,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        const Text(
+                          "",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Color.fromRGBO(69, 88, 115, 1),
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ))
+                ],
+              ),
+      );
+    }));
   }
 
   @override

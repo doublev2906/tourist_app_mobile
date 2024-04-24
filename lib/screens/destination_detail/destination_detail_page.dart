@@ -1,17 +1,19 @@
-import 'dart:ffi';
-import 'dart:math';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:contentsize_tabbarview/contentsize_tabbarview.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:tourist_app_mobille/controllers/destination_detail_controller.dart';
 import 'package:tourist_app_mobille/core/constants/color_palatte.dart';
 import 'package:tourist_app_mobille/core/constants/constants.dart';
+import 'package:tourist_app_mobille/util/action.dart';
 
 class SectionHeaderDelegate extends SliverPersistentHeaderDelegate {
   final double height;
@@ -1101,6 +1103,270 @@ class DestinationDetailPage extends StatelessWidget {
     );
   }
 
+  Widget buildPickListImage(RxList<String> listImages) {
+    return GestureDetector(
+      onTap: () async {
+        final list = await controller.pickListImages();
+        listImages([...list]);
+      },
+      child: Container(
+        height: 120,
+        width: 120,
+        decoration: BoxDecoration(
+            border: Border.all(
+          color: Colors.grey.withOpacity(0.5),
+          width: 1,
+        )),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                PhosphorIconsRegular.camera,
+                color: Colors.grey,
+                size: 32,
+              ),
+              Text(
+                "${listImages.length}/8",
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey,
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void showBottomSheetComment() {
+    final rating = RxDouble(0.0);
+    final listImages = RxList<String>([]);
+    final commentController = TextEditingController();
+    Get.bottomSheet(
+      Obx(() {
+        return Container(
+          height: Get.height * 0.7,
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.only(bottom: 80),
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 4,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      const Text(
+                        "Viết đánh giá",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Color(0xFF0f294d),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            RatingBar(
+                              initialRating: 0,
+                              itemCount: 5,
+                              itemSize: 32,
+                              allowHalfRating: false,
+                              onRatingUpdate: rating.call,
+                              ratingWidget: RatingWidget(
+                                full: const Icon(
+                                  PhosphorIconsFill.heart,
+                                  color: ColorPalette.primaryColor,
+                                ),
+                                half: const Icon(
+                                  PhosphorIconsFill.heart,
+                                  color: ColorPalette.primaryColor,
+                                ),
+                                empty: const Icon(
+                                  PhosphorIconsRegular.heart,
+                                  color: ColorPalette.primaryColor,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            RichText(
+                                text: TextSpan(children: [
+                              TextSpan(
+                                text: "${rating.value}",
+                                style: const TextStyle(
+                                    fontSize: 18,
+                                    color: ColorPalette.primaryColor,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                              const TextSpan(
+                                text: "/5",
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.w500),
+                              )
+                            ])),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        height: 1,
+                        margin: const EdgeInsets.symmetric(vertical: 16),
+                        width: Get.width,
+                        color: Colors.grey.withOpacity(0.2),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: TextFormField(
+                          // controller:
+                          //     TextEditingController(text: comment.value),
+                          // onChanged: comment.call,
+                          controller: commentController,
+                          maxLines: 8,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Color(0xFF0f294d),
+                          ),
+                          decoration: InputDecoration(
+                            hintText:
+                                "Hãy chia sẻ một chút về trải nghiệm của mình ...",
+                            hintStyle: TextStyle(
+                              fontSize: 13,
+                              color: const Color(0xFF0f294d).withOpacity(0.5),
+                            ),
+                            filled: true,
+                            fillColor: const Color(0xFFF5F5F5),
+                            border: const OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8)),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 1,
+                        margin: const EdgeInsets.symmetric(vertical: 16),
+                        width: Get.width,
+                        color: Colors.grey.withOpacity(0.2),
+                      ),
+                      SizedBox(
+                        height: 120,
+                        child: ListView(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          scrollDirection: Axis.horizontal,
+                          children: [
+                            buildPickListImage(listImages),
+                            if (listImages.isEmpty) Container(),
+                            if (listImages.isNotEmpty)
+                              ...listImages.map((img) {
+                                return Container(
+                                  margin: const EdgeInsets.only(left: 8),
+                                  width: 120,
+                                  height: 120,
+                                  child: Stack(
+                                    children: [
+                                      Positioned.fill(
+                                        child: CachedNetworkImage(
+                                            imageUrl: img,
+                                            fit: BoxFit.cover,
+                                            width: 120,
+                                            height: 120,
+                                            placeholder: (context, url) =>
+                                                const Center(
+                                                    child:
+                                                        CircularProgressIndicator())),
+                                      ),
+                                      Positioned(
+                                        top: 0,
+                                        right: 0,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            listImages.remove(img);
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.all(4),
+                                            decoration: const BoxDecoration(
+                                              color: Colors.black54,
+                                            ),
+                                            child: const Icon(
+                                              Icons.close,
+                                              color: Colors.white,
+                                              size: 16,
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                );
+                              })
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      controller.sendReview(
+                          rating.value, commentController.text, listImages);
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(
+                        ColorPalette.primaryColor,
+                      ),
+                      shape: MaterialStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                    ),
+                    child: const Text(
+                      "Gửi đánh giá",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }),
+      isScrollControlled: true,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -1120,10 +1386,17 @@ class DestinationDetailPage extends StatelessWidget {
                     height: 32,
                     child: FittedBox(
                       child: FloatingActionButton.extended(
-                          onPressed: () {
-                            controller.scrollController.animateTo(0,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeInOut);
+                          onPressed: () async {
+                            // final ImagePicker picker = ImagePicker();
+                            // final XFile? image = await picker.pickImage(
+                            //     source: ImageSource.gallery);
+                            // if (image == null) {
+                            //   return;
+                            // }
+                            // handleUploadDocument(image.path, image.name);
+                            if (isReviewTab) {
+                              showBottomSheetComment();
+                            } else {}
                           },
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12)),
@@ -1141,7 +1414,7 @@ class DestinationDetailPage extends StatelessWidget {
                                 : "Chia sẻ khoảnh khắc",
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 14,
+                              fontSize: 16,
                             ),
                           )),
                     ),
@@ -1163,6 +1436,36 @@ class DestinationDetailPage extends StatelessWidget {
                   automaticallyImplyLeading: false,
                   leadingWidth: 40,
                   elevation: 0,
+                  actions: [
+                    if (controller.appService.isAuth())
+                      Container(
+                        margin: const EdgeInsets.only(right: 12),
+                        child: CircleAvatar(
+                          backgroundColor: Colors.white,
+                          radius: 15,
+                          child: IconButton(
+                              padding: const EdgeInsets.all(0),
+                              style: ButtonStyle(
+                                  backgroundColor:
+                                      MaterialStateProperty.all(Colors.white),
+                                  shape: MaterialStateProperty.all(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  )),
+                              onPressed: controller.toggleFavorite,
+                              icon: Icon(
+                                controller.checkDestinationIsFavorite()
+                                    ? PhosphorIconsFill.heart
+                                    : PhosphorIconsRegular.heart,
+                                color: controller.checkDestinationIsFavorite()
+                                    ? Colors.redAccent
+                                    : Colors.black,
+                                size: 20,
+                              )),
+                        ),
+                      ),
+                  ],
                   title: controller.isExpand.value
                       ? null
                       : Text(

@@ -53,5 +53,11 @@
     <string>This app needs access to location when open.</string>
     <key>EnableBackgroundLocationUpdates</key>
     <true/>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Allow Igo to access Your Photos to upload photo</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Allow Igo to access your camera</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Allow Igo to access Your microphone</string>
 </dict>
 </plist>

@@ -1,6 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
+import 'package:dio/dio.dart' as dio;
+import 'package:tourist_app_mobille/network/api.dart';
 
 Future<LocationPermission> checkLocationPermission() async {
   LocationPermission permission = await Geolocator.checkPermission();
@@ -71,4 +76,82 @@ DateTime setDateTimeToZero(DateTime dateTime) {
 
 DateTime getCurrentTime() {
   return setDateTimeToZero(DateTime.now());
+}
+
+Future<Map<String, dynamic>?> handleUploadDocument(
+    String localPath, String? filename) async {
+  const String url =
+      'https://pancake.vn/api/v1/pages/114764021700779/contents?access_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1aWQiOiI4OTBlZGE5YS05ZTdiLTRiNDgtYjQwOC1mZjUwMTBiNmIzNDgiLCJsb2dpbl9zZXNzaW9uIjpudWxsLCJpYXQiOjE3MTIyMDI0ODksImZiX25hbWUiOiJWYW4gVnUiLCJmYl9pZCI6IjEyMjA5MzE1MzgxMDEyMDc1NCIsImV4cCI6NDUzNDcwNTc1NDc4MzQsImNicyI6dHJ1ZX0.nxLSuKeW6WBBZGDJ6zIanCZd9LcwxIrLOfVRrbbomdM';
+  try {
+    MediaType? mediaType;
+    final String? mimeType = lookupMimeType(localPath);
+    if (mimeType != null) {
+      final List<String> dataMimeType = mimeType.split('/');
+      if (dataMimeType.length == 2) {
+        mediaType = MediaType(dataMimeType[0], dataMimeType[1]);
+      }
+    }
+    final Map<String, dynamic> data = {
+      'file': await dio.MultipartFile.fromFile(localPath,
+          filename: filename, contentType: mediaType),
+    };
+    final formData = dio.FormData.fromMap(data);
+    final res = await Api.dio.post(url, data: formData);
+    if (res.data['success']) {
+      res.data.remove('success');
+      return res.data;
+    }
+  } catch (_) {}
+  return null;
+}
+
+void closeProgress() {
+  if (Get.context?.mounted == true && Get.isDialogOpen == true) {
+    Get.close(1);
+  }
+}
+
+/// View loading toàn màn
+void showProgress() {
+  if (Get.context?.mounted == true && Get.isDialogOpen == false) {
+    Get.dialog(
+        barrierDismissible: false,
+        barrierColor: const Color(
+            0x00FFFFFF), // Màu nền dialog mặc định là màu đen mờ, được đổi thành màu trong suốt ở đây (các thuộc tính đã thêm trong 1.20)
+        Material(
+          type: MaterialType.transparency,
+          child: Center(
+            child: Container(
+              height: 88.0,
+              width: 120.0,
+              decoration: const ShapeDecoration(
+                color: Color(0xFF3A3A3A),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Theme(
+                    data: ThemeData(
+                      cupertinoOverrideTheme: const CupertinoThemeData(
+                        brightness: Brightness
+                            .dark, // Nếu theme hiện tại là dark mode, màu của loading sẽ được đặt thành màu trắng
+                      ),
+                    ),
+                    child: const CupertinoActivityIndicator(radius: 14.0),
+                  ),
+                  const SizedBox(height: 8.0),
+                  const Text(
+                    'Loading',
+                    style: TextStyle(color: Colors.white),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
+        transitionCurve: Curves.ease);
+  }
 }
